@@ -171,7 +171,7 @@ ScreenshotReporter.prototype.specDone = function (spec) {
      *     (Object) spec - The test spec to report.
      */
 
-    var self = this, results = spec;
+    var self = this, results = spec, suite = currentSuite;
     if(!self.takeScreenShotsForSkippedSpecs && results.skipped) {
     	return;
     }
@@ -179,8 +179,8 @@ ScreenshotReporter.prototype.specDone = function (spec) {
     browser.takeScreenshot().then(function (png) {
     	browser.getCapabilities().then(function (capabilities) {
     		var descriptions = util.gatherDescriptions(
-    				currentSuite
-    				, [spec.description]
+    				suite
+    				, [results.description]
     			)
 
     			, baseName = self.pathBuilder(
@@ -211,7 +211,7 @@ ScreenshotReporter.prototype.specDone = function (spec) {
     				throw new Error('Could not create directory ' + directory);
     			} else {
     				util.addMetaData(metaData, metaDataPath, descriptions, self.finalOptions);
-    				if(!(self.takeScreenShotsOnlyForFailedSpecs && results.passedExpectations)) {
+    				if(!(self.takeScreenShotsOnlyForFailedSpecs && results.failedExpectations.length === 0)) {
     					util.storeScreenShot(png, screenShotPath);
     				}
     				util.storeMetaData(metaData, metaDataPath);
